@@ -20,10 +20,15 @@ class PhoneBook {
     const validate = this.#validateNewContact(name, phoneNumber, email);
 
     // LOGS ERROR TO CONSOLE
-    if (validate && validate.error) return console.log(validate.error);
+   if (validate && validate.error) return console.log(validate.error);
+   
+   const existingContacts = this.contacts;
+
+  //  checking if any of the keys matches the phone number of the new contact to be added
+   if(existingContacts.has(phoneNumber) === true) return console.log(`Contact already exist`)
    
     //  check if there's an existing contact with the phone number as key or with details as the new contact to be created
-    const existingContacts = this.contacts;
+    
     for (const contactDetails of existingContacts.values()) {
       if (contactDetails.phoneNumber === phoneNumber) return console.log(`Contact with  the phone number ${phoneNumber} already exist`);
       if (contactDetails.email === email) return console.log(`Contact with the email ${email} already exist, Please try using another email`);
