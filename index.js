@@ -1,14 +1,6 @@
 class PhoneBook {
   constructor() {
-    // this.contacts = {};
-    this.contacts = {};
-  }
-  
-  searchContact(phoneNumber) {
-    console.log('PPPP', phoneNumber);
-    const contactData = this.contacts[phoneNumber];
-    // if(contact === undefined) return `Sorry, ${searchValue} does not exist`;
-    return contactData;
+    this.contacts = new Map();
   }
 
   // private method
@@ -19,8 +11,7 @@ class PhoneBook {
     
     // validate email
     const validateEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email.toLowerCase());
-    if (validateEmail === false) {
-      return {error: `${name} has an invalid email`};
+    if (validateEmail === false) { return {error: `${name} has an invalid email` };
     }
   }
 
@@ -30,11 +21,16 @@ class PhoneBook {
 
     // LOGS ERROR TO CONSOLE
     if (validate && validate.error) return console.log(validate.error);
-    
-    // check if contact already exists
-    const contactExist =this.searchContact(phoneNumber);
+   
+    //  check if there's an existing contact with the phone number as key or with details as the new contact to be created
+    const existingContacts = this.contacts;
+    for (const contactDetails of existingContacts.values()) {
+      if (contactDetails.phoneNumber === phoneNumber) return console.log(`Contact with  the phone number ${phoneNumber} already exist`);
+      if (contactDetails.email === email) return console.log(`Contact with the email ${email} already exist, Please try using another email`);
+      if (contactDetails.name === name) return console.log(`Contact with the name ${name} already exist, Please try using another name`);
+    }
 
-    if (contactExist === undefined) {
+    //  structure the contact data to be stored
     const data = {
       name,
       phoneNumber,
@@ -42,24 +38,20 @@ class PhoneBook {
       dateCreated: new Date().toISOString()
       };
       
-      this.contacts[phoneNumber] = data;
+    this.contacts.set(phoneNumber, data);
 
-      console.log(`${data.name} added to contacts successfully`);
-    }
-    console.log(`Contact ${phoneNumber} already exist`);
+    console.log(`${name} added to contacts successfully`);
   }
 
   getAContact(phoneNumber) {
-    const contactData = this.searchContact(phoneNumber);
+    const contactData = this.contacts.get(phoneNumber);
     if (contactData === undefined) return `Contact ${phoneNumber} does not exist`;
     return contactData;
   }
   
   deleteAContact(phoneNumber) {
-    const contactData = this.searchContact(phoneNumber);
-    if (contactData === undefined) return `Contact ${phoneNumber} does not exist`;
-    delete this.contacts[phoneNumber];
-    return `Contact ${phoneNumber} does not exist`;
+    if (this.contacts.delete(phoneNumber) === true) return console.log(`Contact ${phoneNumber} deleted successfully`);
+    return console.log(`Contact ${phoneNumber} does not exist`);
   }
 
   getAllContact() {
@@ -67,8 +59,8 @@ class PhoneBook {
   }
 }
 
+// Note: sola is the owner of the phone book and can therefore save as much contact as he wants in his phone book
 const sola = new PhoneBook('sola', 'sola@gmail.com', '08024460119');
-console.log(sola)
 
 console.log('::::::::::ADD CONTACT::::::');
 // ADD CONTACT [can only add new contacts with unique name, email and phone number]
@@ -81,30 +73,30 @@ sola.addContact('Dolapo', '08024460117', 'dolapo@gmail.com'); // throws error du
 console.log(`:::::::::END OF ADDING CONTACT::::::::`);
 
 // // GET A CONTACT
-// console.log(`\n`);
-// console.log('::::::::GETTING CONTACTS::::::::::');
-// console.log('GET A CONTACT WITH IT\'S PHONE NUMBER:');
-// console.log(sola.getAContact('08024460115')); // return contact that matches the phone number
-// console.log(`\n`);
+console.log(`\n`);
+console.log('::::::::GETTING CONTACTS::::::::::');
+console.log('GET A CONTACT WITH IT\'S PHONE NUMBER:');
+console.log(sola.getAContact('08024460115')); // return contact that matches the phone number
+console.log(`\n`);
 
 
-// console.log('GET A CONTACT THAT DOES NOT EXIST');
-// console.log(sola.getAContact('08024460118')); // returns error when contact does not exist
-// console.log(`:::::::END OF GETTING CONTACTS:::::::`);
-// console.log(`\n\n`);
+console.log('GET A CONTACT THAT DOES NOT EXIST');
+console.log(sola.getAContact('08024460118')); // returns error when contact does not exist
+console.log(`:::::::END OF GETTING CONTACTS:::::::`);
+console.log(`\n\n`);
 
 // // GET ALL CONTACTS
-// console.log(':::::::GET ALL CONTACTS::::::');
-// console.log(sola.contacts);
-// console.log(`\n`);
+console.log(':::::::GET ALL CONTACTS::::::');
+console.log(sola.contacts);
+console.log(`\n`);
 
 
 // // DELETE A CONTACT
-// console.log(':::::::::::::::::DELETE::::::::::::');
+console.log(':::::::::::::::::DELETE::::::::::::');
 
-// console.log('DELETE A CONTACT WITH IT\'S PHONE NUMBER:');
-// console.log(sola.deleteAContact('08024460116')); // returns success message
-// console.log(`\n`);
+console.log('DELETE A CONTACT WITH IT\'S PHONE NUMBER:');
+sola.deleteAContact('08024460116'); // returns success message
+console.log(`\n`);
 
-// console.log('DELETE A CONTACT THAT DOES NOT EXIST:');
-// console.log(sola.deleteAContact('08022344556')); // Sam does not exist  'Sorry, Sam does not exist'
+console.log('DELETE A CONTACT THAT DOES NOT EXIST:');
+sola.deleteAContact('08022344556'); // Sam does not exist  'Sorry, Sam does not exist'
